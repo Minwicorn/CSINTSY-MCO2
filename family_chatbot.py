@@ -20,12 +20,13 @@ def add_fact(statement):
         except Exception as e:
             # If the query throws an exception (fact doesn't exist), continue as there is no conflict
             pass
-
         return None
 
     if "is the father of" in statement:
         name1, name2 = statement.split(" is the father of ")
         conflict_message = check_conflict(name1, "male")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"parent({name1}, {name2})")
@@ -34,6 +35,8 @@ def add_fact(statement):
     elif "is the mother of" in statement:
         name1, name2 = statement.split(" is the mother of ")
         conflict_message = check_conflict(name1, "female")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"parent({name1}, {name2})")
@@ -42,6 +45,8 @@ def add_fact(statement):
     elif "is a brother of" in statement:
         name1, name2 = statement.split(" is a brother of ")
         conflict_message = check_conflict(name1, "male")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"sibling({name1}, {name2})")
@@ -50,6 +55,8 @@ def add_fact(statement):
     elif "is a sister of" in statement:
         name1, name2 = statement.split(" is a sister of ")
         conflict_message = check_conflict(name1, "female")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"sibling({name1}, {name2})")
@@ -58,66 +65,93 @@ def add_fact(statement):
     elif "is an uncle of" in statement:
         name1, name2 = statement.split(" is an uncle of ")
         conflict_message = check_conflict(name1, "male")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"uncle({name1}, {name2})")
+        add_prolog_fact(f"male({name1})")
 
     elif "is an aunt of" in statement:
         name1, name2 = statement.split(" is an aunt of ")
         conflict_message = check_conflict(name1, "female")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"aunt({name1}, {name2})")
+        add_prolog_fact(f"female({name1})")
 
     elif "is the grandparent of" in statement:
         name1, name2 = statement.split(" is the grandparent of ")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         add_prolog_fact(f"grandparent({name1}, {name2})")
 
     elif "is a grandmother of" in statement:
         name1, name2 = statement.split(" is a grandmother of ")
         conflict_message = check_conflict(name1, "female")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"grandmother({name1}, {name2})")
+        add_prolog_fact(f"female({name1})")
 
     elif "is a grandfather of" in statement:
         name1, name2 = statement.split(" is a grandfather of ")
         conflict_message = check_conflict(name1, "male")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"grandfather({name1}, {name2})")
+        add_prolog_fact(f"male({name1})")
 
     elif "is a child of" in statement:
         name1, name2 = statement.split(" is a child of ")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         add_prolog_fact(f"child({name1}, {name2})")
 
     elif "are and children of" in statement:
         names = statement.replace(" are and children of ", "").split(" and ")
+        #uhhh if theres duplicates of a name, error
         for name in names:
             add_prolog_fact(f"child({name}, {names[-1]})")
 
     elif "is a daughter of" in statement:
         name1, name2 = statement.split(" is a daughter of ")
         conflict_message = check_conflict(name1, "female")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"daughter({name1}, {name2})")
+        add_prolog_fact(f"female({name1})")
 
     elif "is a son of" in statement:
         name1, name2 = statement.split(" is a son of ")
         conflict_message = check_conflict(name1, "male")
+        if name1 == name2:
+            return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"son({name1}, {name2})")
+        add_prolog_fact(f"male({name1})")
 
     elif "is a male" in statement:
         name = statement.replace(" is a male", "")
-        #smth smth check if name's gender is already declared
+        conflict_message = check_conflict(name, "male")
+        if conflict_message:
+            return conflict_message
         add_prolog_fact(f"male({name})")
 
     elif "is a female" in statement:
         name = statement.replace(" is a female", "")
-        #smth smth check if name's gender is already declared
+        conflict_message = check_conflict(name, "female")
+        if conflict_message:
+            return conflict_message
         add_prolog_fact(f"female({name})")
 
     else:
