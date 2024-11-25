@@ -110,6 +110,16 @@ def add_fact(statement):
             return conflict_message
         add_prolog_fact(f"son({name1}, {name2})")
 
+    elif "is a male" in statement:
+        name = statement.replace(" is a male", "")
+        #smth smth check if name's gender is already declared
+        add_prolog_fact(f"male({name})")
+
+    elif "is a female" in statement:
+        name = statement.replace(" is a female", "")
+        #smth smth check if name's gender is already declared
+        add_prolog_fact(f"female({name})")
+
     else:
         return "I don't understand this statement."
     
@@ -146,6 +156,8 @@ def ask_question(question):
 
     (r"is (\w+) an uncle of (\w+)\?", lambda m: f"uncle({m[0]}, {m[1]})."),
     (r"is (\w+) an aunt of (\w+)\?", lambda m: f"aunt({m[0]}, {m[1]})."),
+    (r"is (\w+) a male\?", lambda m: f"male({m[0]})."),
+    (r"is (\w+) a female\?", lambda m: f"female({m[0]}).")
     ]
 
     for pattern, handler in patterns:
@@ -176,7 +188,7 @@ if __name__ == "__main__":
         if user_input.lower() == "exit":
             print("Goodbye!")
             break
-        
+
         if re.search(r"\?$", user_input):  
             response = ask_question(user_input)
         else:  
