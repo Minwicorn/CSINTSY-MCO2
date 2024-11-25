@@ -61,6 +61,41 @@ def add_fact(statement):
             return conflict_message
         add_prolog_fact(f"sibling({name1}, {name2})")
         add_prolog_fact(f"female({name1})")
+    
+    elif "and" in statement and "are siblings" in statement:
+        names = statement.replace(" are siblings", "").split(" and ")
+        if len(names) == 2:
+            name1, name2 = names[0].strip(), names[1].strip()
+            add_prolog_fact(f"sibling({name1}, {name2})")
+            add_prolog_fact(f"sibling({name2}, {name1})")
+        else:
+            return "Error: Invalid sibling statement format."
+
+    elif "and" in statement and "are the parents of" in statement:
+        names, child = statement.split(" are the parents of ")
+        parent1, parent2 = names.split(" and ")
+        parent1, parent2, child = parent1.strip(), parent2.strip(), child.strip()
+
+        if parent1 == parent2 or parent1 == child or parent2 == child:
+            return "A person cannot have such a relationship with themselves."
+
+        add_prolog_fact(f"parent({parent1}, {child})")
+        add_prolog_fact(f"parent({parent2}, {child})")
+    
+    elif "and" in statement and "are children of" in statement:
+        names, parent = statement.split(" are children of ")
+        # Split children by commas and "and", and clean up whitespace
+        children = [name.strip() for name in names.replace(" and ", ",").split(",")]
+
+        # Validate for duplicates or self-references
+        if len(children) != len(set(children)):
+            return "Error: Duplicate names found in the list of children."
+        if parent.strip() in children:
+            return "Error: A person cannot be their own parent."
+
+        # Add facts for each child
+        for child in children:
+            add_prolog_fact(f"child({child}, {parent.strip()})")
 
     elif "is an uncle of" in statement:
         name1, name2 = statement.split(" is an uncle of ")
