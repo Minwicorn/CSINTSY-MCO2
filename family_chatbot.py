@@ -207,26 +207,39 @@ def ask_question(question):
     question = question.lower()
 
     patterns = [
-    (r"are (\w+) and (\w+) siblings\?", lambda m: f"sibling({m[0]}, {m[1]})."),
-    (r"is (\w+) a brother of (\w+)\?", lambda m: f"sibling({m[0]}, {m[1]}), male({m[0]})."),
-    (r"is (\w+) a sister of (\w+)\?", lambda m: f"sibling({m[0]}, {m[1]}), female({m[0]})."),
+        (r"are (\w+) and (\w+) siblings\?", lambda m: f"sibling({m[0]}, {m[1]})."),
+        (r"is (\w+) a brother of (\w+)\?", lambda m: f"sibling({m[0]}, {m[1]}), male({m[0]})."),
+        (r"is (\w+) a sister of (\w+)\?", lambda m: f"sibling({m[0]}, {m[1]}), female({m[0]})."),
 
-    (r"is (\w+) the father of (\w+)\?", lambda m: f"parent({m[0]}, {m[1]}), male({m[0]})."),
-    (r"is (\w+) the mother of (\w+)\?", lambda m: f"parent({m[0]}, {m[1]}), female({m[0]})."),
-    (r"are (\w+) and (\w+) the parents of (\w+)\?", lambda m: f"parent({m[0]}, {m[2]}), parent({m[1]}, {m[2]})."),
-    
-    (r"is (\w+) a grandmother of (\w+)\?", lambda m: f"grandmother({m[0]}, {m[1]})."),
-    (r"is (\w+) a grandfather of (\w+)\?", lambda m: f"grandfather({m[0]}, {m[1]})."),
+        (r"is (\w+) the father of (\w+)\?", lambda m: f"parent({m[0]}, {m[1]}), male({m[0]})."),
+        (r"is (\w+) the mother of (\w+)\?", lambda m: f"parent({m[0]}, {m[1]}), female({m[0]})."),
+        (r"are (\w+) and (\w+) the parents of (\w+)\?", lambda m: f"parent({m[0]}, {m[2]}), parent({m[1]}, {m[2]})."),
 
-    (r"is (\w+) a child of (\w+)\?", lambda m: f"child({m[0]}, {m[1]})."),
-    (r"are (\w+) and (\w+) children of (\w+)\?", lambda m: f"child({m[0]}, {m[2]}), child({m[1]}, {m[2]})."),
-    (r"is (\w+) a daughter of (\w+)\?", lambda m: f"daughter({m[0]}, {m[1]})."),
-    (r"is (\w+) a son of (\w+)\?", lambda m: f"son({m[0]}, {m[1]})."),
+        (r"is (\w+) a grandmother of (\w+)\?", lambda m: f"grandmother({m[0]}, {m[1]})."),
+        (r"is (\w+) a grandfather of (\w+)\?", lambda m: f"grandfather({m[0]}, {m[1]})."),
 
-    (r"is (\w+) an uncle of (\w+)\?", lambda m: f"uncle({m[0]}, {m[1]})."),
-    (r"is (\w+) an aunt of (\w+)\?", lambda m: f"aunt({m[0]}, {m[1]})."),
-    (r"is (\w+) a male\?", lambda m: f"male({m[0]})."),
-    (r"is (\w+) a female\?", lambda m: f"female({m[0]}).")
+        (r"is (\w+) a child of (\w+)\?", lambda m: f"child({m[0]}, {m[1]})."),
+        (r"are (\w+) and (\w+) children of (\w+)\?", lambda m: f"child({m[0]}, {m[2]}), child({m[1]}, {m[2]})."),
+        (r"is (\w+) a daughter of (\w+)\?", lambda m: f"daughter({m[0]}, {m[1]})."),
+        (r"is (\w+) a son of (\w+)\?", lambda m: f"son({m[0]}, {m[1]})."),
+
+        (r"is (\w+) an uncle of (\w+)\?", lambda m: f"uncle({m[0]}, {m[1]})."),
+        (r"is (\w+) an aunt of (\w+)\?", lambda m: f"aunt({m[0]}, {m[1]})."),
+        (r"is (\w+) a male\?", lambda m: f"male({m[0]})."),
+        (r"is (\w+) a female\?", lambda m: f"female({m[0]})."),
+
+        (r"who are the siblings of (\w+)\?", lambda m: f"sibling({m[0]}, X)."),
+        (r"who are the sisters of (\w+)\?", lambda m: f"sibling({m[0]}, X), female(X)."),
+        (r"who are the brothers of (\w+)\?", lambda m: f"sibling({m[0]}, X), male(X)."),
+        (r"who is the mother of (\w+)\?", lambda m: f"parent(X, {m[0]}), female(X)."),
+        (r"who is the father of (\w+)\?", lambda m: f"parent(X, {m[0]}), male(X)."),
+        (r"who are the parents of (\w+)\?", lambda m: f"parent(X, {m[0]})."),
+        (r"who are the daughters of (\w+)\?", lambda m: f"daughter(X, {m[0]})."),
+        (r"who are the sons of (\w+)\?", lambda m: f"son(X, {m[0]})."),
+        (r"who are the children of (\w+)\?", lambda m: f"child(X, {m[0]})."),
+
+
+        (r"are (\w+) and (\w+) relatives\?", lambda m: f"related({m[0]}, {m[1]})."),
     ]
 
     for pattern, handler in patterns:
@@ -234,6 +247,7 @@ def ask_question(question):
         if match:
             return query_prolog(handler(match.groups()))  # Use groups directly
     return "I don't understand this question."
+
 
 def query_prolog(query):
     try:
