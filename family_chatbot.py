@@ -7,6 +7,7 @@ prolog.consult("family_rules.pl")
 
 def add_fact(statement):
     statement = statement.lower()
+    redundant_message = "This relationship is not possible."
 
     def check_conflict(name, gender):
         """Check for gender conflicts before adding facts."""
@@ -21,7 +22,12 @@ def add_fact(statement):
             # If the query throws an exception (fact doesn't exist), continue as there is no conflict
             pass
         return None
-
+    
+    def check_relationship(name1, name2, r): # name2 can only have 1 of r   example: only 1 father
+        if list(prolog.query(f"{r}(X, {name2}), X \\= {name1}")):
+            return True
+        return False
+    
     if "is the father of" in statement:
         name1, name2 = statement.split(" is the father of ")
         conflict_message = check_conflict(name1, "male")
@@ -29,6 +35,8 @@ def add_fact(statement):
             return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
+        if check_relationship(name1, name2, "father"):
+            return redundant_message
         add_prolog_fact(f"parent({name1}, {name2})")
         add_prolog_fact(f"male({name1})")
 
@@ -39,6 +47,8 @@ def add_fact(statement):
             return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
+        if check_relationship(name1, name2, "mother"):
+            return redundant_message
         add_prolog_fact(f"parent({name1}, {name2})")
         add_prolog_fact(f"female({name1})")
 
@@ -130,6 +140,8 @@ def add_fact(statement):
             return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
+        if check_relationship(name1, name2, "grandmother"):
+            return redundant_message
         add_prolog_fact(f"grandmother({name1}, {name2})")
         add_prolog_fact(f"female({name1})")
 
@@ -140,6 +152,8 @@ def add_fact(statement):
             return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
+        if check_relationship(name1, name2, "grandfather"):
+            return redundant_message
         add_prolog_fact(f"grandfather({name1}, {name2})")
         add_prolog_fact(f"male({name1})")
 
