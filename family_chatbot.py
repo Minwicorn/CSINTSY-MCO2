@@ -252,9 +252,21 @@ def ask_question(question):
 def query_prolog(query):
     try:
         results = list(prolog.query(query))
-        return "Yes!" if results else "No."
+        if not results:
+            return "No."
+        
+        # Check if query contains variables (e.g., "who" questions)
+        if any("X" in result for result in results):
+            # Collect all unique names found in the results for variable X
+            names = {result["X"] for result in results if "X" in result}
+            if names:
+                return f"The answer is: {', '.join(names)}."
+            return "No relevant names found."
+        
+        return "Yes!"  # For boolean queries without variables
     except Exception as e:
         return f"Error in query: {str(e)}"
+
 
 if __name__ == "__main__":
     print("Family Relations Chat Bot (type 'exit' to quit)")
