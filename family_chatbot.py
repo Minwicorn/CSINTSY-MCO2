@@ -368,4 +368,4 @@ if __name__ == "__main__":
             response = add_fact(user_input)
         
         print("Bot:", response)
-        display_facts() 
+        #display_facts() 
