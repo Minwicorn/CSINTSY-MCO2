@@ -31,6 +31,7 @@ def add_fact(statement):
             return conflict_message
         add_prolog_fact(f"parent({name1}, {name2})")
         add_prolog_fact(f"male({name1})")
+        
 
     elif "is the mother of" in statement:
         name1, name2 = statement.split(" is the mother of ")
@@ -252,6 +253,7 @@ def ask_question(question):
 def query_prolog(query):
     try:
         results = list(prolog.query(query))
+        print(results) #DEBUG
         if not results:
             return "No."
         
@@ -266,6 +268,30 @@ def query_prolog(query):
         return "Yes!"  # For boolean queries without variables
     except Exception as e:
         return f"Error in query: {str(e)}"
+
+def display_facts():
+    display_gender("male")
+    display_gender("female")
+    display_one("parent")
+    display_one("sibling")
+    display_one("grandfather")
+    display_one("grandmother")
+    display_one("uncle")
+    display_one("aunt")
+    display_one("child")
+    display_one("daughter")
+    display_one("son")
+    display_one("grandparent")
+
+def display_gender(genzzzz):
+    res = list(prolog.query(f"{genzzzz}(X)"))
+    for oof in res:
+        print(f"{genzzzz}({oof['X']})")
+
+def display_one(uwah):
+    res = list(prolog.query(f"{uwah}(X, Y)"))
+    for oof in res:
+        print(f"{uwah}({oof['X']}, {oof['Y']})")
 
 
 if __name__ == "__main__":
@@ -290,3 +316,4 @@ if __name__ == "__main__":
             response = add_fact(user_input)
         
         print("Bot:", response)
+        display_facts()
