@@ -52,7 +52,3 @@ descendant(X, Y) :- parent(Z, X), descendant(Z, Y).
 % Gender Consistency
 cannot_be_both_male_and_female(X) :- male(X), female(X), !.
 cannot_be_both_male_and_female(X) :- not(male(X)), not(female(X)), !.
-
-% Ensuring Parent and Sibling Consistency
-parent(X, Y) :- male(X), !. % Optional: Handle general parent relationship
-parent(X, Y) :- female(X), !. % Optional: Handle general parent relationship
