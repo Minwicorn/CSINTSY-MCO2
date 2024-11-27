@@ -27,6 +27,14 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "male")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
+
+        if list(prolog.query(f"father( X, {name2})")): # only allows for 1 father 
+            return "%s already has a father." % (name2)
+        
+
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"parent({name1}, {name2})")
@@ -38,6 +46,13 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "female")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
+        
+        if list(prolog.query(f"mother( X, {name2})")): # only allows for 1 mother 
+            return "%s already has a mother." % (name2)
+
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"parent({name1}, {name2})")
@@ -50,8 +65,11 @@ def add_fact(statement):
             return "%s cannot be two different people." % (name1.capitalize())
         if conflict_message:
             return conflict_message
+        
         add_prolog_fact(f"sibling({name1}, {name2})")
         add_prolog_fact(f"male({name1})")
+        return "I learned something! kinda..."
+
 
     elif "is a sister of" in statement:
         name1, name2 = statement.split(" is a sister of ")
@@ -62,6 +80,7 @@ def add_fact(statement):
             return conflict_message
         add_prolog_fact(f"sibling({name1}, {name2})")
         add_prolog_fact(f"female({name1})")
+        return "I learned something! kinda..."
     
     elif "and" in statement and "are siblings" in statement:
         names = statement.replace(" are siblings", "").split(" and ")
@@ -69,8 +88,10 @@ def add_fact(statement):
             name1, name2 = names[0].strip(), names[1].strip()
             add_prolog_fact(f"sibling({name1}, {name2})")
             add_prolog_fact(f"sibling({name2}, {name1})")
+            return "I learned something! kinda..."
         else:
             return "Error: Invalid sibling statement format."
+        
 
     elif "and" in statement and "are the parents of" in statement:
         names, child = statement.split(" are the parents of ")
@@ -79,7 +100,10 @@ def add_fact(statement):
 
         if parent1 == parent2 or parent1 == child or parent2 == child:
             return "A person cannot have such a relationship with themselves."
-
+        
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
+        
         add_prolog_fact(f"parent({parent1}, {child})")
         add_prolog_fact(f"parent({parent2}, {child})")
     
@@ -93,7 +117,7 @@ def add_fact(statement):
             return "Error: Duplicate names found in the list of children."
         if parent.strip() in children:
             return "Error: A person cannot be their own parent."
-
+        
         # Add facts for each child
         for child in children:
             add_prolog_fact(f"child({child}, {parent.strip()})")
@@ -103,6 +127,10 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "male")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
+        
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"uncle({name1}, {name2})")
@@ -113,6 +141,10 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "female")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
+        
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"aunt({name1}, {name2})")
@@ -122,6 +154,8 @@ def add_fact(statement):
         name1, name2 = statement.split(" is the grandparent of ")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
         add_prolog_fact(f"grandparent({name1}, {name2})")
 
     elif "is a grandmother of" in statement:
@@ -129,6 +163,8 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "female")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"grandmother({name1}, {name2})")
@@ -139,6 +175,8 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "male")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        if list(prolog.query(f"older( {name2}, {name1})")): # doesn't allow descendants to be their parents' parents or anything 
+            return "You can't do that. Time doesn't work that way!" 
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"grandfather({name1}, {name2})")
@@ -148,7 +186,12 @@ def add_fact(statement):
         name1, name2 = statement.split(" is a child of ")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"younger( {name2}, {name1})")): # doesn't allow older people to be their own children
+            return "You can't do that, Time doesn't work that way!" 
+        
         add_prolog_fact(f"child({name1}, {name2})")
+        add_prolog_fact(f"parent({name2}, {name1})")
 
     elif "are and children of" in statement:
         names = statement.replace(" are and children of ", "").split(" and ")
@@ -161,6 +204,10 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "female")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"younger( {name2}, {name1})")): # doesn't allow older people to be their own children
+            return "You can't do that, Time doesn't work that way!" 
+        
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"daughter({name1}, {name2})")
@@ -171,6 +218,10 @@ def add_fact(statement):
         conflict_message = check_conflict(name1, "male")
         if name1 == name2:
             return "%s cannot be two different people." % (name1.capitalize())
+        
+        if list(prolog.query(f"younger( {name2}, {name1})")): # doesn't allow older people to be their own children
+            return "You can't do that, Time doesn't work that way!" 
+
         if conflict_message:
             return conflict_message
         add_prolog_fact(f"son({name1}, {name2})")
@@ -216,6 +267,7 @@ def ask_question(question):
         (r"is (\w+) the mother of (\w+)\?", lambda m: f"parent({m[0]}, {m[1]}), female({m[0]})."),
         (r"are (\w+) and (\w+) the parents of (\w+)\?", lambda m: f"parent({m[0]}, {m[2]}), parent({m[1]}, {m[2]})."),
 
+        (r"is (\w+) a grandparent of (\w+)\?", lambda m: f"grandparent({m[0]}, {m[1]})."),
         (r"is (\w+) a grandmother of (\w+)\?", lambda m: f"grandmother({m[0]}, {m[1]})."),
         (r"is (\w+) a grandfather of (\w+)\?", lambda m: f"grandfather({m[0]}, {m[1]})."),
 
@@ -253,7 +305,7 @@ def ask_question(question):
 def query_prolog(query):
     try:
         results = list(prolog.query(query))
-        print(results) #DEBUG
+        # print(results) #for debugging
         if not results:
             return "No."
         
@@ -316,4 +368,4 @@ if __name__ == "__main__":
             response = add_fact(user_input)
         
         print("Bot:", response)
-        display_facts()
+        display_facts() 
